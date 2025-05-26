@@ -1,0 +1,149 @@
+2025-05-07 14:10:53,816 - INFO - ================================================================================
+2025-05-07 14:10:53,818 - INFO - Optimized Ensemble (CatBoost + LightGBM) Training Script
+2025-05-07 14:10:53,819 - INFO - Target dataset: catboost_dataset.csv
+2025-05-07 14:10:53,820 - INFO - ================================================================================
+2025-05-07 14:10:53,820 - INFO - 
+--- Loading Dataset ---
+2025-05-07 14:10:53,821 - INFO - Dataset file size: 888.14 MB
+2025-05-07 14:10:53,828 - INFO - Available memory: 855.48 MB
+2025-05-07 14:10:53,829 - INFO - Available CPU cores: 12
+2025-05-07 14:10:53,829 - WARNING - Low memory available. Consider reducing SAMPLE_SIZE or closing other applications.
+2025-05-07 14:10:53,829 - WARNING - Dataset size exceeds 50% of available memory. Using Dask for loading.
+2025-05-07 14:12:20,391 - INFO - Dataset loaded with shape: (3000000, 37)
+2025-05-07 14:12:20,467 - INFO - 
+Data Types:
+FLOW_DURATION_MILLISECONDS               int32
+PROTOCOL                                 int32
+L7_PROTO                                 int32
+IN_BYTES                                 int32
+IN_PKTS                                  int32
+OUT_BYTES                                int32
+OUT_PKTS                                 int32
+MIN_IP_PKT_LEN                           int32
+MAX_IP_PKT_LEN                           int32
+LONGEST_FLOW_PKT                         int32
+SHORTEST_FLOW_PKT                        int32
+NUM_PKTS_UP_TO_128_BYTES                 int32
+NUM_PKTS_128_TO_256_BYTES                int32
+NUM_PKTS_256_TO_512_BYTES                int32
+NUM_PKTS_512_TO_1024_BYTES               int32
+NUM_PKTS_1024_TO_1514_BYTES              int32
+TCP_FLAGS                                int32
+CLIENT_TCP_FLAGS                         int32
+SERVER_TCP_FLAGS                         int32
+TCP_WIN_MAX_IN                           int32
+TCP_WIN_MAX_OUT                          int32
+SRC_TO_DST_AVG_THROUGHPUT                int32
+DST_TO_SRC_AVG_THROUGHPUT                int32
+SRC_TO_DST_IAT_MIN                       int32
+SRC_TO_DST_IAT_MAX                       int32
+SRC_TO_DST_IAT_AVG                       int32
+SRC_TO_DST_IAT_STDDEV                    int32
+DST_TO_SRC_IAT_MIN                       int32
+DST_TO_SRC_IAT_MAX                       int32
+DST_TO_SRC_IAT_AVG                       int32
+DST_TO_SRC_IAT_STDDEV                    int32
+RETRANSMITTED_IN_BYTES                   int32
+RETRANSMITTED_IN_PKTS                    int32
+RETRANSMITTED_OUT_BYTES                  int32
+RETRANSMITTED_OUT_PKTS                   int32
+Label                                    int32
+Attack                         string[pyarrow]
+dtype: object
+2025-05-07 14:12:20,897 - INFO - 
+Missing values: 0
+2025-05-07 14:12:20,898 - INFO - 
+Class Distribution:
+2025-05-07 14:12:21,535 - INFO -   Benign: 1,830,311 (61.01%)
+2025-05-07 14:12:21,536 - INFO -   ddos: 451,894 (15.06%)
+2025-05-07 14:12:21,536 - INFO -   xss: 308,845 (10.29%)
+2025-05-07 14:12:21,536 - INFO -   password: 173,815 (5.79%)
+2025-05-07 14:12:21,537 - INFO -   scanning: 148,149 (4.94%)
+2025-05-07 14:12:21,537 - INFO -   injection: 41,595 (1.39%)
+2025-05-07 14:12:21,537 - INFO -   Backdoor: 22,202 (0.74%)
+2025-05-07 14:12:21,538 - INFO -   dos: 22,079 (0.74%)
+2025-05-07 14:12:21,538 - INFO -   mitm: 677 (0.02%)
+2025-05-07 14:12:21,538 - INFO -   ransomware: 433 (0.01%)
+2025-05-07 14:12:21,552 - INFO - Current memory usage: 470.18 MB
+2025-05-07 14:12:22,573 - INFO - 
+--- Preprocessing Data ---
+2025-05-07 14:12:22,585 - INFO - Available memory: 2093.86 MB
+2025-05-07 14:12:22,586 - INFO - Available CPU cores: 12
+2025-05-07 14:12:23,263 - INFO - Dropped column: Label
+2025-05-07 14:12:23,990 - INFO - Imputing missing values...
+2025-05-07 14:12:30,365 - INFO - Imputation completed
+2025-05-07 14:12:30,365 - INFO - Scaling features...
+2025-05-07 14:12:35,279 - INFO - Scaling completed
+2025-05-07 14:12:35,280 - INFO - Encoding target...
+2025-05-07 14:12:37,600 - INFO - Encoded 10 target classes: ['Backdoor', 'Benign', 'ddos', 'dos', 'injection', 'mitm', 'password', 'ransomware', 'scanning', 'xss']
+2025-05-07 14:12:37,601 - INFO - Using all 35 features for training
+2025-05-07 14:12:46,179 - INFO - Training set: 2,400,000 samples
+2025-05-07 14:12:46,179 - INFO - Test set: 600,000 samples
+2025-05-07 14:12:46,180 - INFO - Preprocessing completed in 23.61 seconds
+2025-05-07 14:12:46,180 - INFO - Memory usage after preprocessing: 2348.42 MB
+2025-05-07 14:12:46,665 - INFO - 
+--- Training Ensemble Model (CatBoost + LightGBM) ---
+2025-05-07 14:12:46,665 - INFO - CatBoost parameters for training: {'loss_function': 'MultiClass', 'iterations': 50, 'learning_rate': 0.1, 'depth': 6, 'l2_leaf_reg': 3.0, 'random_seed': 42, 'bagging_temperature': 1, 'rsm': 0.8, 'thread_count': -1, 'verbose': 100, 'bootstrap_type': 'Bayesian', 'od_type': 'Iter', 'od_wait': 10, 'task_type': 'CPU'}
+2025-05-07 14:12:46,676 - INFO - Training ensemble model...
+2025-05-07 14:23:44,577 - INFO - Training completed in 657.90 seconds
+2025-05-07 14:23:44,613 - INFO - Current memory usage: 12.28 MB
+2025-05-07 14:23:45,831 - INFO - 
+--- Evaluating Model Performance ---
+2025-05-07 14:24:15,494 - INFO - 
+==================================================
+2025-05-07 14:24:15,500 - INFO - PERFORMANCE METRICS SUMMARY
+2025-05-07 14:24:15,501 - INFO - ==================================================
+2025-05-07 14:24:15,501 - INFO -   ACCURACY: 0.8976
+2025-05-07 14:24:15,501 - INFO -   PRECISION: 0.9331
+2025-05-07 14:24:15,502 - INFO -   RECALL: 0.8976
+2025-05-07 14:24:15,502 - INFO -   F1: 0.9087
+2025-05-07 14:24:15,503 - INFO -   AUC_OVR_MEAN: 0.9872
+2025-05-07 14:24:15,504 - INFO - ==================================================
+2025-05-07 14:24:15,504 - INFO - 
+Classification Report:
+2025-05-07 14:24:16,051 - INFO -               precision    recall  f1-score   support
+
+    Backdoor       0.98      0.98      0.98      4440
+      Benign       0.94      0.97      0.95    366062
+        ddos       0.99      0.97      0.98     90379
+         dos       0.97      0.71      0.82      4416
+   injection       0.95      0.59      0.73      8319
+        mitm       0.00      0.46      0.00       135
+    password       0.90      0.62      0.73     34763
+  ransomware       0.02      0.31      0.04        87
+    scanning       0.75      0.35      0.47     29630
+         xss       0.93      0.82      0.87     61769
+
+    accuracy                           0.90    600000
+   macro avg       0.74      0.68      0.66    600000
+weighted avg       0.93      0.90      0.91    600000
+
+2025-05-07 14:24:16,120 - INFO - Evaluation completed in 30.29 seconds
+2025-05-07 14:24:16,122 - INFO - Memory usage after evaluation: 294.76 MB
+2025-05-07 14:24:16,122 - INFO - 
+--- Generating and Saving Plots ---
+2025-05-07 14:24:16,126 - INFO - Created directory: C:\Users\VICTUS\Desktop\XX_XX\catboost\plots
+2025-05-07 14:24:18,539 - INFO - Saved confusion matrix to: C:\Users\VICTUS\Desktop\XX_XX\catboost\plots\confusion_matrix.png
+2025-05-07 14:24:19,090 - INFO - Saved feature importance plot to: C:\Users\VICTUS\Desktop\XX_XX\catboost\plots\feature_importance.png
+2025-05-07 14:24:19,092 - INFO - Saved top features list to: C:\Users\VICTUS\Desktop\XX_XX\catboost\top_features.txt
+2025-05-07 14:24:19,470 - INFO - Saved metrics summary plot to: C:\Users\VICTUS\Desktop\XX_XX\catboost\plots\metrics_summary.png
+2025-05-07 14:24:19,471 - INFO - Created 3 plots in 3.35 seconds
+2025-05-07 14:24:19,471 - INFO - Memory usage after plotting: 360.61 MB
+2025-05-07 14:24:19,908 - INFO - 
+--- Saving Model and Encoder ---
+2025-05-07 14:24:19,979 - INFO - Model saved to: C:\Users\VICTUS\Desktop\XX_XX\catboost\ensemble_model.pkl (Size: 1.14 MB)
+2025-05-07 14:24:19,982 - INFO - Label encoder saved successfully
+2025-05-07 14:24:19,984 - INFO - Scaler saved successfully
+2025-05-07 14:24:19,985 - INFO - 
+================================================================================
+2025-05-07 14:24:19,985 - INFO - Script completed in 13 minutes and 26 seconds
+2025-05-07 14:24:19,985 - INFO - Model saved to: C:\Users\VICTUS\Desktop\XX_XX\catboost\ensemble_model.pkl
+2025-05-07 14:24:19,986 - INFO - Performance Summary:
+2025-05-07 14:24:19,986 - INFO -   ACCURACY: 0.8976
+2025-05-07 14:24:19,986 - INFO -   PRECISION: 0.9331
+2025-05-07 14:24:19,986 - INFO -   RECALL: 0.8976
+2025-05-07 14:24:19,987 - INFO -   F1: 0.9087
+2025-05-07 14:24:19,987 - INFO -   AUC_OVR_MEAN: 0.9872
+2025-05-07 14:24:19,987 - INFO - ================================================================================
+2025-05-07 14:24:19,988 - INFO - 
+Final memory usage: 431.80 MB

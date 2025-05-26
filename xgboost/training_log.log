@@ -1,0 +1,150 @@
+2025-05-07 14:33:22,596 - INFO - ================================================================================
+2025-05-07 14:33:22,597 - INFO - XGBoost Training Script
+2025-05-07 14:33:22,597 - INFO - Target dataset: xgboost_dataset.csv
+2025-05-07 14:33:22,597 - INFO - ================================================================================
+2025-05-07 14:33:22,598 - INFO - 
+--- Loading Dataset ---
+2025-05-07 14:33:22,598 - INFO - Dataset file size: 888.14 MB
+2025-05-07 14:33:22,603 - INFO - Available memory: 1014.38 MB
+2025-05-07 14:33:22,604 - INFO - Available CPU cores: 12
+2025-05-07 14:33:22,604 - WARNING - Low memory available. Consider reducing SAMPLE_SIZE or closing other applications.
+2025-05-07 14:33:22,604 - WARNING - Dataset size exceeds 50% of available memory. Using Dask for loading.
+2025-05-07 14:34:04,559 - INFO - Dataset loaded with shape: (2999998, 37)
+2025-05-07 14:34:04,604 - INFO - 
+Data Types:
+FLOW_DURATION_MILLISECONDS               int32
+PROTOCOL                                 int32
+L7_PROTO                                 int32
+IN_BYTES                                 int32
+IN_PKTS                                  int32
+OUT_BYTES                                int32
+OUT_PKTS                                 int32
+MIN_IP_PKT_LEN                           int32
+MAX_IP_PKT_LEN                           int32
+LONGEST_FLOW_PKT                         int32
+SHORTEST_FLOW_PKT                        int32
+NUM_PKTS_UP_TO_128_BYTES                 int32
+NUM_PKTS_128_TO_256_BYTES                int32
+NUM_PKTS_256_TO_512_BYTES                int32
+NUM_PKTS_512_TO_1024_BYTES               int32
+NUM_PKTS_1024_TO_1514_BYTES              int32
+TCP_FLAGS                                int32
+CLIENT_TCP_FLAGS                         int32
+SERVER_TCP_FLAGS                         int32
+TCP_WIN_MAX_IN                           int32
+TCP_WIN_MAX_OUT                          int32
+SRC_TO_DST_AVG_THROUGHPUT                int32
+DST_TO_SRC_AVG_THROUGHPUT                int32
+SRC_TO_DST_IAT_MIN                       int32
+SRC_TO_DST_IAT_MAX                       int32
+SRC_TO_DST_IAT_AVG                       int32
+SRC_TO_DST_IAT_STDDEV                    int32
+DST_TO_SRC_IAT_MIN                       int32
+DST_TO_SRC_IAT_MAX                       int32
+DST_TO_SRC_IAT_AVG                       int32
+DST_TO_SRC_IAT_STDDEV                    int32
+RETRANSMITTED_IN_BYTES                   int32
+RETRANSMITTED_IN_PKTS                    int32
+RETRANSMITTED_OUT_BYTES                  int32
+RETRANSMITTED_OUT_PKTS                   int32
+Label                                    int32
+Attack                         string[pyarrow]
+dtype: object
+2025-05-07 14:34:04,775 - INFO - 
+Missing values: 0
+2025-05-07 14:34:04,776 - INFO - 
+Class Distribution:
+2025-05-07 14:34:05,068 - INFO -   Benign: 1,830,213 (61.01%)
+2025-05-07 14:34:05,069 - INFO -   ddos: 451,776 (15.06%)
+2025-05-07 14:34:05,069 - INFO -   xss: 308,983 (10.30%)
+2025-05-07 14:34:05,070 - INFO -   password: 173,792 (5.79%)
+2025-05-07 14:34:05,071 - INFO -   scanning: 148,373 (4.95%)
+2025-05-07 14:34:05,071 - INFO -   injection: 41,466 (1.38%)
+2025-05-07 14:34:05,072 - INFO -   dos: 22,222 (0.74%)
+2025-05-07 14:34:05,072 - INFO -   Backdoor: 22,055 (0.74%)
+2025-05-07 14:34:05,073 - INFO -   mitm: 670 (0.02%)
+2025-05-07 14:34:05,073 - INFO -   ransomware: 448 (0.01%)
+2025-05-07 14:34:05,091 - INFO - Current memory usage: 470.05 MB
+2025-05-07 14:34:05,543 - INFO - 
+--- Preprocessing Data ---
+2025-05-07 14:34:05,550 - INFO - Available memory: 2459.87 MB
+2025-05-07 14:34:05,550 - INFO - Available CPU cores: 12
+2025-05-07 14:34:05,795 - INFO - Dropped column: Label
+2025-05-07 14:34:06,056 - INFO - Imputing missing values...
+2025-05-07 14:34:08,553 - INFO - Imputation completed
+2025-05-07 14:34:08,554 - INFO - Scaling features...
+2025-05-07 14:34:10,457 - INFO - Scaling completed
+2025-05-07 14:34:10,458 - INFO - Encoding target...
+2025-05-07 14:34:11,160 - INFO - Encoded 10 target classes: ['Backdoor', 'Benign', 'ddos', 'dos', 'injection', 'mitm', 'password', 'ransomware', 'scanning', 'xss']
+2025-05-07 14:34:11,161 - INFO - Using all 35 features for training
+2025-05-07 14:34:14,004 - INFO - Training set: 2,399,998 samples
+2025-05-07 14:34:14,004 - INFO - Test set: 600,000 samples
+2025-05-07 14:34:14,005 - INFO - Preprocessing completed in 8.46 seconds
+2025-05-07 14:34:14,005 - INFO - Memory usage after preprocessing: 2655.23 MB
+2025-05-07 14:34:14,209 - INFO - 
+--- Training XGBoost Model ---
+2025-05-07 14:34:14,210 - INFO - XGBoost parameters: {'objective': 'multi:softprob', 'eval_metric': 'mlogloss', 'booster': 'gbtree', 'max_depth': 6, 'learning_rate': 0.1, 'subsample': 0.8, 'colsample_bytree': 0.8, 'min_child_weight': 5, 'gamma': 0.1, 'reg_alpha': 0.1, 'reg_lambda': 1.0, 'tree_method': 'hist', 'verbosity': 0, 'random_state': 42, 'n_jobs': -1, 'num_class': 10}
+2025-05-07 14:34:14,210 - INFO - Fast mode enabled: Using 100 boosting rounds and max_depth=6
+2025-05-07 14:34:15,449 - INFO - Training model with 100 boosting rounds...
+2025-05-07 14:36:43,128 - INFO - Training completed in 148.91 seconds
+2025-05-07 14:36:43,143 - INFO - Current memory usage: 270.53 MB
+2025-05-07 14:36:43,460 - INFO - 
+--- Evaluating Model Performance ---
+2025-05-07 14:36:46,898 - INFO - 
+==================================================
+2025-05-07 14:36:46,898 - INFO - PERFORMANCE METRICS SUMMARY
+2025-05-07 14:36:46,898 - INFO - ==================================================
+2025-05-07 14:36:46,899 - INFO -   ACCURACY: 0.9437
+2025-05-07 14:36:46,899 - INFO -   PRECISION: 0.9391
+2025-05-07 14:36:46,899 - INFO -   RECALL: 0.9437
+2025-05-07 14:36:46,899 - INFO -   F1: 0.9380
+2025-05-07 14:36:46,899 - INFO -   AUC_OVR_MEAN: 0.9930
+2025-05-07 14:36:46,900 - INFO - ==================================================
+2025-05-07 14:36:46,900 - INFO - 
+Classification Report:
+2025-05-07 14:36:47,070 - INFO -               precision    recall  f1-score   support
+
+    Backdoor       1.00      1.00      1.00      4411
+      Benign       0.94      0.97      0.96    366043
+        ddos       0.99      0.98      0.98     90355
+         dos       0.98      0.69      0.81      4444
+   injection       0.96      0.89      0.92      8293
+        mitm       0.99      0.67      0.80       134
+    password       0.94      0.99      0.96     34758
+  ransomware       0.76      0.70      0.73        90
+    scanning       0.74      0.38      0.50     29675
+         xss       0.93      0.99      0.96     61797
+
+    accuracy                           0.94    600000
+   macro avg       0.92      0.83      0.86    600000
+weighted avg       0.94      0.94      0.94    600000
+
+2025-05-07 14:36:47,094 - INFO - Evaluation completed in 3.63 seconds
+2025-05-07 14:36:47,095 - INFO - Memory usage after evaluation: 608.68 MB
+2025-05-07 14:36:47,112 - INFO - 
+--- Generating and Saving Plots ---
+2025-05-07 14:36:47,115 - INFO - Created directory: C:\Users\VICTUS\Desktop\XX_XX\xgboost\plots
+2025-05-07 14:36:47,812 - INFO - Saved confusion matrix to: C:\Users\VICTUS\Desktop\XX_XX\xgboost\plots\confusion_matrix.png
+2025-05-07 14:36:47,958 - INFO - Saved feature importance plot to: C:\Users\VICTUS\Desktop\XX_XX\xgboost\plots\feature_importance.png
+2025-05-07 14:36:47,960 - INFO - Saved top features list to: C:\Users\VICTUS\Desktop\XX_XX\xgboost\top_features.txt
+2025-05-07 14:36:48,086 - INFO - Saved metrics summary plot to: C:\Users\VICTUS\Desktop\XX_XX\xgboost\plots\metrics_summary.png
+2025-05-07 14:36:48,086 - INFO - Created 3 plots in 0.97 seconds
+2025-05-07 14:36:48,087 - INFO - Memory usage after plotting: 486.87 MB
+2025-05-07 14:36:48,171 - INFO - 
+--- Saving Model and Encoder ---
+2025-05-07 14:36:48,201 - INFO - Model saved to: C:\Users\VICTUS\Desktop\XX_XX\xgboost\xgboost_model.pkl (Size: 2.68 MB)
+2025-05-07 14:36:48,202 - INFO - Label encoder saved successfully
+2025-05-07 14:36:48,204 - INFO - Scaler saved successfully
+2025-05-07 14:36:48,204 - INFO - 
+================================================================================
+2025-05-07 14:36:48,204 - INFO - Script completed in 3 minutes and 25 seconds
+2025-05-07 14:36:48,204 - INFO - Model saved to: C:\Users\VICTUS\Desktop\XX_XX\xgboost\xgboost_model.pkl
+2025-05-07 14:36:48,204 - INFO - Performance Summary:
+2025-05-07 14:36:48,204 - INFO -   ACCURACY: 0.9437
+2025-05-07 14:36:48,204 - INFO -   PRECISION: 0.9391
+2025-05-07 14:36:48,205 - INFO -   RECALL: 0.9437
+2025-05-07 14:36:48,205 - INFO -   F1: 0.9380
+2025-05-07 14:36:48,205 - INFO -   AUC_OVR_MEAN: 0.9930
+2025-05-07 14:36:48,205 - INFO - ================================================================================
+2025-05-07 14:36:48,205 - INFO - 
+Final memory usage: 475.26 MB
