@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeteroFL Dashboard - Bidirectional Federated Learning</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Socket.IO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .main-content {
+            padding: 20px;
+        }
+        
+        .status-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .plot-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+        
+        .control-btn {
+            margin: 5px;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+        
+        .progress-ring-circle {
+            stroke: #fff;
+            stroke-width: 4;
+            fill: transparent;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-idle { background-color: #6c757d; }
+        .status-running { background-color: #28a745; animation: pulse 1.5s infinite; }
+        .status-completed { background-color: #007bff; }
+        .status-error { background-color: #dc3545; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .log-container {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        
+        .log-info { color: #63b3ed; }
+        .log-warning { color: #f6e05e; }
+        .log-error { color: #fc8181; }
+        
+        .model-status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        
+        .flow-animation {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .flow-arrow {
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background: #28a745;
+            animation: flow 2s linear infinite;
+        }
+        
+        @keyframes flow {
+            0% { left: -20px; opacity: 0; }
+            50% { opacity: 1; }
+            100% { left: 100%; opacity: 0; }
+        }
+        
+        .nav-tabs .nav-link {
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar">
+                <div class="text-center mb-4">
+                    <h3><i class="fas fa-network-wired"></i> HeteroFL</h3>
+                    <p class="mb-0">Bidirectional Federated Learning</p>
+                </div>
+                
+                <!-- System Status -->
+                <div class="status-card">
+                    <h5><i class="fas fa-info-circle"></i> System Status</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="status-indicator status-idle" id="statusIndicator"></span>
+                        <span id="statusText">Idle</span>
+                    </div>
+                    
+                    <!-- Progress Ring -->
+                    <div class="text-center mb-3">
+                        <svg class="progress-ring">
+                            <circle class="progress-ring-circle" cx="60" cy="60" r="45" id="progressCircle"></circle>
+                            <text x="60" y="65" text-anchor="middle" fill="white" font-size="14" id="progressText">0%</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <strong id="currentRound">0</strong>
+                            <br><small>Current Round</small>
+                        </div>
+                        <div class="col-6">
+                            <strong id="totalRounds">0</strong>
+                            <br><small>Total Rounds</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Control Panel -->
+                <div class="mb-4">
+                    <h5><i class="fas fa-cogs"></i> Control Panel</h5>
+                    
+                    <div class="mb-3">
+                        <label for="roundsInput" class="form-label">Number of Rounds:</label>
+                        <input type="number" class="form-control" id="roundsInput" value="5" min="1" max="20">
+                    </div>
+                    
+                    <button class="btn btn-success control-btn w-100" id="startBtn">
+                        <i class="fas fa-play"></i> Start FL Process
+                    </button>
+                    
+                    <button class="btn btn-danger control-btn w-100" id="stopBtn" disabled>
+                        <i class="fas fa-stop"></i> Stop Process
+                    </button>
+                    
+                    <button class="btn btn-info control-btn w-100" id="exportMetricsBtn">
+                        <i class="fas fa-download"></i> Export Metrics
+                    </button>
+                    
+                    <button class="btn btn-warning control-btn w-100" id="exportModelsBtn">
+                        <i class="fas fa-save"></i> Export Models
+                    </button>
+                </div>
+                
+                <!-- Model Status -->
+                <div class="mb-4">
+                    <h5><i class="fas fa-cubes"></i> Model Status</h5>
+                    <div id="modelStatus">
+                        <div class="model-status">
+                            <i class="fas fa-circle text-secondary me-2"></i>
+                            <span>No models loaded</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 main-content">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-chart-line"></i> Real-time Dashboard</h2>
+                    <div class="text-muted">
+                        <i class="fas fa-clock"></i> <span id="currentTime"></span>
+                    </div>
+                </div>
+                
+                <!-- Metrics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="metric-card text-center">
+                            <h3 class="text-primary" id="globalAccuracy">--</h3>
+                            <p class="mb-0">Global Accuracy</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card text-center">
+                            <h3 class="text-success" id="globalF1">--</h3>
+                            <p class="mb-0">Global F1 Score</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card text-center">
+                            <h3 class="text-warning" id="modelsActive">0</h3>
+                            <p class="mb-0">Active Models</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card text-center">
+                            <h3 class="text-info" id="avgConfidence">--</h3>
+                            <p class="mb-0">Avg Confidence</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Visualization Tabs -->
+                <ul class="nav nav-tabs" id="visualizationTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="model-evolution-tab" data-bs-toggle="tab" 
+                                data-bs-target="#model-evolution" type="button" role="tab">
+                            <i class="fas fa-chart-line"></i> Model Evolution
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="global-evolution-tab" data-bs-toggle="tab" 
+                                data-bs-target="#global-evolution" type="button" role="tab">
+                            <i class="fas fa-globe"></i> Global Model
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="class-distribution-tab" data-bs-toggle="tab" 
+                                data-bs-target="#class-distribution" type="button" role="tab">
+                            <i class="fas fa-th"></i> Class Distribution
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="system-logs-tab" data-bs-toggle="tab" 
+                                data-bs-target="#system-logs" type="button" role="tab">
+                            <i class="fas fa-terminal"></i> System Logs
+                        </button>
+                    </li>
+                </ul>
+                
+                <!-- Tab Content -->
+                <div class="tab-content" id="visualizationTabContent">
+                    <!-- Model Evolution Tab -->
+                    <div class="tab-pane fade show active" id="model-evolution" role="tabpanel">
+                        <div class="plot-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5><i class="fas fa-chart-line"></i> Local Model Performance Evolution</h5>
+                                <button class="btn btn-sm btn-outline-primary" id="refreshModelEvolution">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                            <div id="modelEvolutionPlot"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Global Evolution Tab -->
+                    <div class="tab-pane fade" id="global-evolution" role="tabpanel">
+                        <div class="plot-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5><i class="fas fa-globe"></i> Global Model Performance</h5>
+                                <button class="btn btn-sm btn-outline-primary" id="refreshGlobalEvolution">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                            <div id="globalEvolutionPlot"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Class Distribution Tab -->
+                    <div class="tab-pane fade" id="class-distribution" role="tabpanel">
+                        <div class="plot-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5><i class="fas fa-th"></i> Class Distribution Heatmap</h5>
+                                <button class="btn btn-sm btn-outline-primary" id="refreshClassDistribution">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                            <div id="classDistributionPlot"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- System Logs Tab -->
+                    <div class="tab-pane fade" id="system-logs" role="tabpanel">
+                        <div class="plot-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5><i class="fas fa-terminal"></i> Live System Logs</h5>
+                                <button class="btn btn-sm btn-outline-secondary" id="clearLogs">
+                                    <i class="fas fa-trash"></i> Clear
+                                </button>
+                            </div>
+                            <div class="log-container" id="systemLogs">
+                                <div class="log-entry log-info">[INFO] Dashboard initialized</div>
+                                <div class="log-entry log-info">[INFO] Waiting for FL process to start...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

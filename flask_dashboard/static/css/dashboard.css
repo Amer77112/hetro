@@ -1,0 +1,302 @@
+/* Additional CSS for HeteroFL Dashboard */
+
+/* Custom animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); }
+}
+
+/* Enhanced card animations */
+.metric-card {
+    animation: fadeIn 0.6s ease-out;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Status indicators with enhanced animations */
+.status-running {
+    animation: pulse 1.5s infinite, glow 2s infinite;
+}
+
+.status-completed {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.status-error {
+    animation: pulse 0.5s ease-out 3;
+}
+
+/* Enhanced progress ring */
+.progress-ring {
+    transition: all 0.5s ease;
+}
+
+.progress-ring:hover {
+    transform: scale(1.1);
+}
+
+/* Improved button styles */
+.control-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.control-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.control-btn:hover::before {
+    left: 100%;
+}
+
+.control-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Enhanced log container */
+.log-container {
+    position: relative;
+    border: 1px solid #4a5568;
+    transition: all 0.3s ease;
+}
+
+.log-container:hover {
+    border-color: #667eea;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+.log-entry {
+    animation: slideIn 0.3s ease-out;
+    transition: background-color 0.2s ease;
+}
+
+.log-entry:hover {
+    background-color: rgba(255,255,255,0.05);
+}
+
+/* Enhanced model status */
+.model-status {
+    animation: fadeIn 0.4s ease-out;
+    transition: all 0.3s ease;
+}
+
+.model-status:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(5px);
+}
+
+/* Flow animation enhancements */
+.flow-animation {
+    position: relative;
+    overflow: hidden;
+}
+
+.flow-arrow {
+    position: absolute;
+    width: 30px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #28a745, transparent);
+    border-radius: 2px;
+    animation: flow 2s linear infinite;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+@keyframes flow {
+    0% { 
+        left: -30px; 
+        opacity: 0; 
+        transform: scale(0.5);
+    }
+    25% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+    75% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+    100% { 
+        left: 100%; 
+        opacity: 0; 
+        transform: scale(0.5);
+    }
+}
+
+/* Enhanced tab styles */
+.nav-tabs .nav-link {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-tabs .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-tabs .nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-tabs .nav-link.active::after {
+    width: 100%;
+}
+
+/* Plot container enhancements */
+.plot-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.plot-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.plot-container:hover::before {
+    opacity: 1;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive enhancements */
+@media (max-width: 768px) {
+    .sidebar {
+        min-height: auto;
+        padding: 15px;
+    }
+    
+    .main-content {
+        padding: 15px;
+    }
+    
+    .metric-card {
+        margin-bottom: 15px;
+    }
+    
+    .control-btn {
+        margin: 3px;
+        padding: 8px 16px;
+    }
+    
+    .progress-ring {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .metric-card {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .plot-container {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+}
+
+/* Accessibility improvements */
+.control-btn:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+.nav-link:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .sidebar {
+        display: none;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .control-btn {
+        display: none;
+    }
+    
+    .plot-container {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .status-indicator {
+        border: 2px solid #000;
+    }
+    
+    .metric-card {
+        border: 2px solid #000;
+    }
+    
+    .control-btn {
+        border: 2px solid #000;
+    }
+}
