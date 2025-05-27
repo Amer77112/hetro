@@ -9,4 +9,8 @@ xgboost==1.7.6
 lightgbm==3.3.5
 tqdm==4.66.1
 psutil==5.9.5
-dask==2023.6.0 
+dask==2023.6.0
+flask==2.3.3
+flask-socketio==5.3.5
+plotly==5.15.0
+jinja2==3.1.2
